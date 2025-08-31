@@ -3,49 +3,25 @@
  * @return {number}
  */
 var largestRectangleArea = function (heights) {
+  const stack = [];
+  let monstRec = 0;
   const n = heights.length;
-  const subValues = new Array(n).fill(1);
-
   for (let i = 0; i < n; i++) {
-    let l = i - 1;
-    let r = i + 1;
-
-    if (i === 0) {
-      subValues[i] =
-        heights[i] >= heights[r] && heights[r] !== 0 ? heights[r] : heights[i];
-      continue;
+    let start = i;
+    while (stack.length > 0 && stack[stack.length - 1][1] > heights[i]) {
+      const [index, height] = stack.pop();
+      monstRec = Math.max(monstRec, height * (i - index));
+      start = index;
     }
 
-    const leftHeight =
-      heights[i] >= heights[l] && heights[l] !== 0 ? heights[l] : -1;
-    const rightHeight =
-      heights[i] >= heights[r] && heights[r] !== 0 ? heights[r] : -1;
-
-    const maxVal = Math.max(leftHeight, rightHeight);
-
-    if (maxVal === -1) {
-      subValues[i] = heights[i];
-    } else {
-      subValues[i] = maxVal;
-    }
+    stack.push([start, heights[i]]);
   }
+  console.log("Left stack: ", stack);
 
-  let maxRectanglelar = 0;
-
-  for (let i = 0; i < n; i++) {
-    let currVal = 0;
-    if (i === n - 1 || subValues[i + 1] === 0) {
-      currVal = subValues[i];
-    } else {
-      currVal = subValues[i] * 2;
-    }
-
-    if (maxRectanglelar < currVal) {
-      maxRectanglelar = currVal;
-    }
+  for (let [index, height] of stack) {
+    monstRec = Math.max(monstRec, height * (n - index));
   }
-
-  return maxRectanglelar;
+  return monstRec;
 };
 
-console.log(largestRectangleArea([2, 0, 2]));
+console.log(largestRectangleArea([2, 1, 5, 6, 2, 3]));

@@ -1,0 +1,47 @@
+class Solution(object):
+    def findAnagrams(self, s, p):
+       if len(s) < len(p):
+           return []
+
+       p_count, s_count = [0] * 26, [0] * 26
+       start_indices = []
+       matches = 0
+
+       for i in range(len(s)):
+           p_count[ord(p[i]) - ord('a')]+=1
+           s_count[ord(s[i]) - ord('a')]+=1
+
+       for i in range(26):
+           matches += (1 if s_count[i] == p_count[i] else 0)
+           if matches == 26:
+               start_indices.append(0)
+
+        
+       lo = 0
+       for hi in range(len(p), len(s)):
+           index = ord(s[hi]) - ord('a')
+           s_count[index]+=1
+           if p_count[index]  == s_count[index] :
+                matches+=1
+           elif p_count[index] + 1 == s_count[index]:
+               matches-=1
+
+           index = ord(s[lo]) - ord('a')
+           s_count[index]-=1
+           if p_count[index]  == s_count[index] :
+                matches+=1
+           elif p_count[index] - 1 == s_count[index]:
+               matches-=1
+           lo+=1
+
+           if matches == 26:
+               start_indices.append(lo)
+
+       return start_indices
+           
+        
+
+
+
+
+         
