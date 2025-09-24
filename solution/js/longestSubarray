@@ -1,0 +1,20 @@
+/**
+ * @param {number[]} nums
+ * @return {number}
+ */
+var longestSubarray = function (nums) {
+  let res = 0;
+  let totalOnes = 0;
+
+  for (let l = 0, h = 0; h < nums.length; h++) {
+    totalOnes += nums[h] ? 1 : 0;
+
+    while (h - l + 1 - totalOnes > 1) {
+      totalOnes -= nums[l] ? 1 : 0;
+      l++;
+    }
+
+    res = Math.max(res, totalOnes);
+  }
+  return res === nums.length ? res - 1 : res;
+};

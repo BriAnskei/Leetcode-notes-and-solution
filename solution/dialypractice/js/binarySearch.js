@@ -2,21 +2,20 @@
 // [1, 3, 5, 6, 5, 3]
 
 function binarySearch(arr, target) {
-  let lo = 0,
-    hi = arr.length;
-  while (lo < hi) {
-    const m = lo + Math.floor((hi - lo) / 2);
+  let l = 0,
+    h = arr.length;
+  while (l < h) {
+    const m = l + Math.floor((h - l) / 2);
 
-    if (arr[m] === target) return m;
+    if (arr[m] === target) return true;
 
     if (arr[m] < target) {
-      lo = m + 1;
+      l = m + 1;
     } else {
-      hi = m - 1;
+      h = m - 1;
     }
   }
-
-  return -1;
+  return false;
 }
 
-console.log(binarySearch([2, 5, 8, 12, 16, 23, 38, 56, 72, 91], 23));
+console.log(binarySearch([2, 5, 8, 12, 16, 23, 38, 56, 72, 91], 91));
