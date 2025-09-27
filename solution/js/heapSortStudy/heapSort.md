@@ -1,126 +1,226 @@
-# Sliding Window Median
-
-A JavaScript implementation for finding the median of elements in a sliding window using a dual-heap approach with lazy deletion.
+# Sliding Window Median - Complete Guide
 
 ## Overview
 
-This implementation solves the sliding window median problem efficiently by maintaining two balanced heaps and using lazy deletion to handle element removal without expensive heap operations.
+This solution implements a **Sliding Window Median** algorithm that efficiently finds the median of every k-sized window as it slides through an array. The key insight is using two heaps to maintain the median in O(log k) time per operation.
 
-## How It Works
+## Core Components
 
-### Core Components
+### 1. CustomHeap Class
 
-#### 1. CustomHeap Class
+A generic heap implementation that supports both min-heap and max-heap behavior through a custom comparator function.
 
-A generic binary heap implementation that supports custom comparison functions.
+```javascript
+// Max-heap example: new CustomHeap((a, b) => a > b)
+// Min-heap example: new CustomHeap((a, b) => a < b)
+```
 
-**Key Features:**
+**Key Operations:**
 
-- **Configurable ordering**: Accepts a comparison function to create either min-heap or max-heap
-- **Standard heap operations**: `push()`, `pop()`, `peek()`, `size()`
-- **Binary heap structure**: Uses array representation where parent is at `(i-1)/2` and children at `2*i+1` and `2*i+2`
+- `push(val)`: Adds element and maintains heap property via sift-up
+- `pop()`: Removes root element and maintains heap property via sift-down
+- `peek()`: Returns root element without removal
+- `_siftUp()`: Bubbles element up to maintain heap order
+- `_siftDown()`: Bubbles element down to maintain heap order
 
-**Heap Operations:**
+### 2. SlidingWindowMedian Class
 
-- **Sift Up (`_siftUp`)**: After insertion, bubbles element up to maintain heap property
-- **Sift Down (`_siftDown`)**: After removal, sinks element down to restore heap order
+Uses two heaps to efficiently track the median:
 
-#### 2. SlidingWindowMedian Class
+- **small heap (max-heap)**: Stores smaller half of numbers
+- **large heap (min-heap)**: Stores larger half of numbers
 
-Implements the two-heap pattern with lazy deletion for efficient median tracking.
+## Algorithm Visualization
 
-**Data Structures:**
+### Initial Setup
 
-- **`small`**: Max-heap storing the smaller half of elements
-- **`large`**: Min-heap storing the larger half of elements
-- **`delayed`**: Map tracking elements marked for lazy deletion
-- **Size counters**: `smallSize` and `largeSize` track logical sizes (excluding deleted elements)
+```
+Window size k = 3
+Array: [1, 3, -1, -3, 5, 3, 6, 7]
+```
 
-### Algorithm Mechanics
+### Step-by-Step Process
 
-#### Dual-Heap Pattern
+#### Step 1: Initialize first window [1, 3, -1]
 
-The algorithm maintains two heaps such that:
+```
+After adding 1:
+small: [1]     large: []
+       ↑ median = 1
 
-- All elements in `small` ≤ all elements in `large`
-- Heaps are balanced: `|smallSize - largeSize| ≤ 1`
-- For odd window sizes: `smallSize = largeSize + 1`
-- For even window sizes: `smallSize = largeSize`
+After adding 3:
+small: [1]     large: [3]
+       ↑              ↑
+median = (1 + 3) / 2 = 2
 
-#### Lazy Deletion Strategy
+After adding -1:
+small: [1, -1] large: [3]
+       ↑
+median = 1 (from small.peek())
+```
 
-Instead of immediately removing elements from heaps (expensive O(k) operation), the algorithm:
+#### Step 2: Slide window to [3, -1, -3]
 
-1. **Marks elements for deletion** in the `delayed` map
-2. **Tracks logical sizes** separately from physical heap sizes
-3. **Prunes heaps lazily** when deleted elements reach the top
-4. **Maintains balance** based on logical sizes, not physical heap sizes
+```
+Remove 1, Add -3:
+small: [3, -1, -3] large: []
+              ↑
+median = -1
+```
 
-#### Core Operations
+#### Visual Representation of Heap Structure
 
-**Adding Elements (`addNum`)**:
+```
+Max Heap (small)          Min Heap (large)
+     3                         5
+   /   \                     /   \
+ -1    -3                   6     7
+```
 
-1. Determine which heap based on comparison with `small.peek()`
-2. Insert into appropriate heap
-3. Increment corresponding size counter
-4. Rebalance heaps if necessary
+### Complete Window Sliding Example
 
-**Removing Elements (`removeNum`)**:
+```
+Array: [1, 3, -1, -3, 5, 3, 6, 7], k = 3
 
-1. Mark element for lazy deletion in `delayed` map
-2. Decrement appropriate size counter
-3. If removed element is at heap top, trigger immediate pruning
-4. Rebalance heaps based on logical sizes
+Window 1: [1, 3, -1]
+├─ small: [1, -1] (max-heap)
+├─ large: [3] (min-heap)
+└─ median: 1
 
-**Pruning (`_prune`)**:
+Window 2: [3, -1, -3]
+├─ small: [-1, -3] (max-heap)
+├─ large: [3] (min-heap)
+└─ median: -1
 
-- Removes all delayed elements from heap top
-- Only runs when deleted elements are accessible (at heap root)
-- Maintains heap property by only removing from top
+Window 3: [-1, -3, 5]
+├─ small: [-1, -3] (max-heap)
+├─ large: [5] (min-heap)
+└─ median: -1
 
-**Rebalancing (`_rebalance`)**:
+Window 4: [-3, 5, 3]
+├─ small: [-3] (max-heap)
+├─ large: [3, 5] (min-heap)
+└─ median: 3
 
-- Moves elements between heaps to maintain size invariants
-- Triggers pruning after transfers to clean up delayed elements
-- Uses logical sizes for balance decisions
+Window 5: [5, 3, 6]
+├─ small: [3] (max-heap)
+├─ large: [5, 6] (min-heap)
+└─ median: 5
 
-**Finding Median (`findMedian`)**:
+Window 6: [3, 6, 7]
+├─ small: [3] (max-heap)
+├─ large: [6, 7] (min-heap)
+└─ median: 6
 
-- **Odd window size**: Return `small.peek()` (max of smaller half)
-- **Even window size**: Return average of both heap tops
+Result: [1, -1, -1, 3, 5, 6]
+```
 
-## Time Complexity
+## Key Algorithms Explained
 
-- **Add/Remove operations**: O(log k) amortized
-- **Find median**: O(1)
-- **Overall sliding window**: O(n log k) where n = array length, k = window size
+### Heap Operations
 
-The lazy deletion approach avoids the O(k) cost of searching and removing arbitrary elements from heaps.
+#### Sift Up (for insertion)
 
-## Space Complexity
+```
+       5              5              8
+     /   \    →     /   \    →     /   \
+    3     4        8     4        5     4
+   /             /               /
+  8             3               3
 
-- O(k) for storing window elements in heaps
-- O(k) worst case for delayed deletion map
+Insert 8: Place at end → Compare with parent → Swap if needed → Repeat
+```
+
+#### Sift Down (for deletion)
+
+```
+       8              4              5
+     /   \    →     /   \    →     /   \
+    5     4        5     4        8     4
+   /             /               /
+  3             3               3
+
+Remove root: Move last to root → Compare with children → Swap with larger → Repeat
+```
+
+### Balancing Strategy
+
+The algorithm maintains this invariant:
+
+- **small.size() ≥ large.size()**
+- **small.size() ≤ large.size() + 1**
+
+```
+Balanced states:
+k=3: small(2) + large(1) → median = small.peek()
+k=4: small(2) + large(2) → median = (small.peek() + large.peek()) / 2
+```
+
+### Lazy Deletion with Delayed Map
+
+Instead of searching through heaps to remove elements, we use a "delayed deletion" approach:
+
+```javascript
+delayed = new Map()  // tracks elements to be removed
+
+removeNum(5):
+├─ delayed.set(5, count + 1)  // mark for deletion
+├─ update size counters
+└─ prune() if element is at heap top
+
+_prune(heap):
+while (heap.peek() is in delayed):
+├─ remove from delayed map
+└─ heap.pop()
+```
+
+## Time & Space Complexity
+
+### Time Complexity
+
+- **Per window slide**: O(log k)
+  - addNum(): O(log k) for heap insertion
+  - removeNum(): O(log k) for lazy deletion and pruning
+  - rebalance(): O(log k) for heap operations
+- **Overall**: O(n log k) where n = array length
+
+### Space Complexity
+
+- **Heaps**: O(k) for storing window elements
+- **Delayed map**: O(k) in worst case
+- **Total**: O(k)
+
+## Edge Cases Handled
+
+1. **Empty heaps**: Proper null checks in peek() operations
+2. **Single element**: Handles k=1 windows correctly
+3. **Even/odd window sizes**: Different median calculation logic
+4. **Duplicate elements**: Delayed map handles multiple occurrences
+5. **Negative numbers**: Works with any numeric values
 
 ## Usage Example
 
 ```javascript
-// Find median of sliding window of size 3
-const result = medianSlidingWindow([1, 3, -1, -3, 5, 3, 6, 7], 3);
-// Returns array of medians for each window position
+// Example usage
+const nums = [1, 3, -1, -3, 5, 3, 6, 7];
+const k = 3;
+const result = medianSlidingWindow(nums, k);
+console.log(result); // [1, -1, -1, 3, 5, 6]
+
+// Step by step breakdown:
+// Window [1,3,-1]:   sorted=[−1,1,3] → median=1
+// Window [3,-1,-3]:  sorted=[−3,−1,3] → median=−1
+// Window [-1,-3,5]:  sorted=[−3,−1,5] → median=−1
+// Window [-3,5,3]:   sorted=[−3,3,5] → median=3
+// Window [5,3,6]:    sorted=[3,5,6] → median=5
+// Window [3,6,7]:    sorted=[3,6,7] → median=6
 ```
 
-## Design Patterns Used
+## Why This Approach Works
 
-1. **Two-Heap Pattern**: Efficiently maintains running median
-2. **Lazy Deletion**: Defers expensive removals until necessary
-3. **Template/Strategy Pattern**: CustomHeap accepts comparison functions
-4. **Encapsulation**: Private methods prefixed with underscore
-5. **Separation of Concerns**: Distinct classes for heap operations vs median logic
+1. **Two-heap strategy**: Efficiently maintains sorted order without full sorting
+2. **Lazy deletion**: Avoids expensive heap search operations
+3. **Size tracking**: Maintains balance without counting heap elements
+4. **Pruning**: Cleans up delayed deletions when they reach heap tops
 
-## Key Insights
-
-- **Lazy deletion** trades memory for time complexity, avoiding O(k) removals
-- **Logical size tracking** allows balance decisions independent of physical heap state
-- **Immediate pruning** when deleted elements reach heap tops prevents unbounded growth
-- **Two-heap invariant** ensures median is always accessible in O(1) time
+This solution elegantly handles the sliding window median problem with optimal time complexity, making it suitable for large datasets and real-time streaming scenarios.

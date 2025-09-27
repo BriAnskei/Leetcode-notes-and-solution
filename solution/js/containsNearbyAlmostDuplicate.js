@@ -24,19 +24,18 @@ function containsNearbyAlmostDuplicate2(nums, indexDiff, valueDiff) {
       return true;
     }
 
-    // Check neighbor bucket (bucketId - 1)
     if (buckets.has(bucketId - 1)) {
       const diff = Math.abs(num - buckets.get(bucketId - 1));
       console.log(
         `   Checking LEFT neighbor bucket=${bucketId - 1}, diff=${diff}`
       );
+
       if (diff <= valueDiff) {
         console.log(`   ✅ Found nearby duplicate with LEFT bucket`);
         return true;
       }
     }
 
-    // Check neighbor bucket (bucketId + 1)
     if (buckets.has(bucketId + 1)) {
       const diff = Math.abs(num - buckets.get(bucketId + 1));
       console.log(
@@ -48,11 +47,9 @@ function containsNearbyAlmostDuplicate2(nums, indexDiff, valueDiff) {
       }
     }
 
-    // Store current number in its bucket
     buckets.set(bucketId, num);
     console.log(`   ➤ Inserted num=${num} into bucketId=${bucketId}`);
 
-    // Maintain sliding window of size indexDiff
     if (i >= indexDiff) {
       const oldNum = nums[i - indexDiff];
       const oldBucketId = getBucketId(oldNum);
