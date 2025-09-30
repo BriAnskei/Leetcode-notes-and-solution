@@ -10,7 +10,7 @@ var longestSubstring = function (s, k) {
     let unique = 0;
     let countAtLeastK = 0;
 
-    console.log("loop runnign");
+
 
     while (right < n) {
       console.log("while loop runnign");
@@ -40,4 +40,4 @@ var longestSubstring = function (s, k) {
   return maxLen;
 };
 
-console.log(longestSubstring("aaabb", 3)); // Output: 3 ("aaa")
+console.log(longestSubstring("aassbfjqqii", 2)); // Output: 3 ("aaa")
