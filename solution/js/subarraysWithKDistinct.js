@@ -42,18 +42,3 @@ console.log(subarraysWithKDistinct([1, 2, 1, 2, 3], 2));
 
 
 
-// small -> max heap (a > b)
-// [4, 3, 2]
-
-// large -> min heap (a < b)
-// [2 ,4, 5, 6, 7]
-
-// {4: 2}
-
-    1
-  /   \
-2      3
- 
-
-[1, 2, 4, 5]
-

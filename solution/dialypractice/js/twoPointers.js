@@ -12,20 +12,20 @@
 
 function twoSum(arr, target) {
   let l = 0,
-    h = arr.length - 1;
+    h = arr.length;
+
   while (l < h) {
-    const val = arr[l] + arr[h];
+    const res = arr[l] + arr[h];
 
-    console.log("loop running:d ", l, h, val);
+    if (res === target) return true;
 
-    if (val === target) {
-      return [l, h];
+    if (res < target) {
+      l++;
+    } else {
+      h--;
     }
-
-    if (val < target) l++;
-    else h--;
   }
-  return [];
+  return false;
 }
 
-console.log(twoSum([-8, 1, 4, 6, 10, 45], 16));
+console.log(twoSum([10, 20, 35, 50], 70));

@@ -11,18 +11,16 @@
 function maxSum(arr, k) {
   let res = 0;
 
-  for (let i = 0; i < k; i++) {
-    res += arr[i];
-  }
+  for (let curRes = 0, l = 0, h = 0; h < arr.length; h++) {
+    curRes += arr[h];
 
-  for (let curVal = res, l = 0, h = k; h < arr.length; h++) {
-    curVal += arr[h] - arr[l];
-
-    res = Math.max(res, curVal);
-
-    l++;
+    if (h - l + 1 === k) {
+      res = Math.max(res, curRes);
+      curRes -= arr[l];
+      l++;
+    }
   }
   return res;
 }
 
-console.log(maxSum([1, 4, 2, 10, 23, 3, 1, 0, 20], 4));
+console.log(maxSum([5, 2, -1, 0, 3], 3));

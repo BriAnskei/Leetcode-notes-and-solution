@@ -21,7 +21,7 @@ var findTargetSumWays = function (nums, target) {
   for (let i = 0, curAdd = 0; i < nums.length; i++) {
     let result = 0;
     for (let j = 0; j < nums.length; j++) {
-      result = j === curAdd ? (result += nums[j]) : (result -= nums[j]);
+      result  j === curAdd ? (result += nums[j]) : (result -= nums[j]);
     }
 
     if (result === target) {

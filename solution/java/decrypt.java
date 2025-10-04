@@ -23,6 +23,7 @@ public class decrypt {
             } else {
                 hi = lo + 1;
                 lo++;
+                
             }
 
             if (hi == n) {
